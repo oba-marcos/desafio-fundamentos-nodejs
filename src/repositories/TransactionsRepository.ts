@@ -1,3 +1,4 @@
+import { uuid } from 'uuidv4';
 import Transaction from '../models/Transaction';
 
 interface Balance {
@@ -14,15 +15,32 @@ class TransactionsRepository {
   }
 
   public all(): Transaction[] {
-    // TODO
+    return this.transactions;
   }
 
   public getBalance(): Balance {
-    // TODO
+    const balance: Balance = { income: 0, outcome: 0, total: 0 };
+    this.transactions.forEach(transaction => {
+      if (transaction.type === 'income') {
+        balance.income += transaction.value;
+      }
+      if (transaction.type === 'outcome') {
+        balance.outcome += transaction.value;
+      }
+    });
+    balance.total = balance.income - balance.outcome;
+    return balance;
   }
 
-  public create(): Transaction {
-    // TODO
+  public create({ title, value, type }: Omit<Transaction, 'id'>): Transaction {
+    const newTransaction = {
+      id: uuid(),
+      title,
+      value,
+      type,
+    };
+    this.transactions.push(newTransaction);
+    return newTransaction;
   }
 }
 
